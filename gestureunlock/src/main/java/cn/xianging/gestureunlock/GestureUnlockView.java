@@ -285,7 +285,7 @@ public class GestureUnlockView extends View {
         Circle circle;
         int number;
 
-        public LockPoint(float x, float y, float radius, int number) {
+        LockPoint(float x, float y, float radius, int number) {
             this.number = number;
             this.circle = new Circle(x, y, radius);
         }
@@ -330,7 +330,7 @@ public class GestureUnlockView extends View {
             }
         }
 
-        public void draw(Canvas canvas) {
+        void draw(Canvas canvas) {
             preparePaintColor();
             canvas.drawLine(this.startX, this.startY, this.endX, this.endY, linePaint);
         }
@@ -340,7 +340,7 @@ public class GestureUnlockView extends View {
         float centerX, centerY, radius, outerRadius;
         State state = State.NORMAL;
 
-        public Circle(float pointX, float pointY, float radius) {
+        Circle(float pointX, float pointY, float radius) {
             this.centerX = pointX;
             this.centerY = pointY;
             this.radius = radius;
@@ -361,7 +361,7 @@ public class GestureUnlockView extends View {
             }
         }
 
-        public void draw(Canvas canvas) {
+        void draw(Canvas canvas) {
             preparePaintColor();
             canvas.drawCircle(this.centerX, this.centerY, this.radius, pointPaint);
             if (this.state == State.PRESSED || this.state == State.ERROR) {
@@ -371,7 +371,7 @@ public class GestureUnlockView extends View {
             }
         }
 
-        public boolean isHit(float paramFloat1, float paramFloat2) {
+        boolean isHit(float paramFloat1, float paramFloat2) {
             return (Math.abs(paramFloat1 - this.centerX) < this.outerRadius) && (Math.abs(paramFloat2 - this.centerY) < this.outerRadius);
         }
     }
