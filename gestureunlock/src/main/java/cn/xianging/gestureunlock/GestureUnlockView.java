@@ -194,7 +194,7 @@ public class GestureUnlockView extends View {
                     mGestureLines.add(newLine);
                 }
                 mGesturePoints.add(hitPoint);
-                setSelectedPointsState(State.PRESED);
+                setSelectedPointsState(State.PRESSED);
             }
 
             postInvalidate();
@@ -277,8 +277,8 @@ public class GestureUnlockView extends View {
         void onGestureDone(LinkedHashSet<Integer> numbers);
     }
 
-    public enum State {
-        NORMAL, PRESED, ERROR
+    enum State {
+        NORMAL, PRESSED, ERROR
     }
 
     class LockPoint {
@@ -313,7 +313,7 @@ public class GestureUnlockView extends View {
 
     class Line {
         float startX, startY, endX, endY;
-        State state = State.PRESED;
+        State state = State.PRESSED;
 
         Line(float startX, float startY, float endX, float endY) {
             this.startX = startX;
@@ -323,7 +323,7 @@ public class GestureUnlockView extends View {
         }
 
         private void preparePaintColor() {
-            if (this.state == State.PRESED) {
+            if (this.state == State.PRESSED) {
                 linePaint.setColor(colorSelected);
             } else {
                 linePaint.setColor(colorError);
@@ -352,7 +352,7 @@ public class GestureUnlockView extends View {
                 case NORMAL:
                     pointPaint.setColor(colorNormal);
                     break;
-                case PRESED:
+                case PRESSED:
                     pointPaint.setColor(colorSelected);
                     break;
                 case ERROR:
@@ -364,7 +364,7 @@ public class GestureUnlockView extends View {
         public void draw(Canvas canvas) {
             preparePaintColor();
             canvas.drawCircle(this.centerX, this.centerY, this.radius, pointPaint);
-            if (this.state == State.PRESED || this.state == State.ERROR) {
+            if (this.state == State.PRESSED || this.state == State.ERROR) {
                 pointPaint.setStyle(Paint.Style.STROKE);
                 canvas.drawCircle(this.centerX, this.centerY, this.outerRadius, pointPaint);
                 pointPaint.setStyle(Paint.Style.FILL);
