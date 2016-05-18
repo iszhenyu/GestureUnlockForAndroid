@@ -14,6 +14,7 @@
     tools:showIn="@layout/activity_main">
 
     <cn.xianging.gestureunlock.GestureUnlockView
+        android:id="@+id/gesture_unlock_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />

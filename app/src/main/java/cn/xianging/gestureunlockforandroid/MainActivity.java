@@ -1,15 +1,15 @@
 package cn.xianging.gestureunlockforandroid;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.view.View;
-import android.view.Menu;
-import android.view.MenuItem;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import java.util.LinkedHashSet;
+
+import cn.xianging.gestureunlock.GestureUnlockView;
+
+public class MainActivity extends AppCompatActivity implements GestureUnlockView.OnGestureDoneListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -18,35 +18,28 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
+        GestureUnlockView mUnlockView = (GestureUnlockView) findViewById(R.id.gesture_unlock_view);
+        if (mUnlockView != null) {
+            mUnlockView.setOnGestureDoneListener(this);
+        }
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+    public boolean isValidGesture(int pointCount) {
+        if (pointCount < 4) {
+            Toast.makeText(this, "不得少于4位", Toast.LENGTH_LONG).show();
+            return false;
+        }
         return true;
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+    public void onGestureDone(LinkedHashSet<Integer> numbers) {
+        String str = "";
+        for (Integer num : numbers) {
+            str += num;
         }
-
-        return super.onOptionsItemSelected(item);
+        Toast.makeText(this, str, Toast.LENGTH_LONG).show();
     }
+
 }

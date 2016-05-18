@@ -209,7 +209,11 @@ public class GestureUnlockView extends View {
                 selectedNumbers.add(mGesturePoints.get(k).number);
             }
             if (this.mOnGestureDoneListener != null) {
-                this.mOnGestureDoneListener.onGestureDone(selectedNumbers);
+                if (mOnGestureDoneListener.isValidGesture(selectedNumbers.size())) {
+                    this.mOnGestureDoneListener.onGestureDone(selectedNumbers);
+                } else {
+                    setSelectedPointsState(State.ERROR);
+                }
             }
             mHandler.postDelayed(new Runnable() {
                 public void run() {
@@ -238,7 +242,7 @@ public class GestureUnlockView extends View {
     /**
      * 重置状态
      */
-    public void resetSelectedPointsState() {
+    private void resetSelectedPointsState() {
         if (!mGesturePoints.isEmpty()) {
             for (LockPoint point : mGesturePoints) {
                 point.changeState(State.NORMAL);
@@ -250,12 +254,12 @@ public class GestureUnlockView extends View {
         }
     }
 
-    public void setSelectedPointsState(State newState) {
+    private void setSelectedPointsState(State newState) {
         if (!mGesturePoints.isEmpty()) {
             for (LockPoint point : mGesturePoints) {
                 point.changeState(newState);
             }
-            if (newState == State.ERROR) {
+            if (newState == State.ERROR && !mGestureLines.isEmpty()) {
                 for (Line line : mGestureLines) {
                     line.state = newState;
                 }
@@ -269,6 +273,7 @@ public class GestureUnlockView extends View {
     }
 
     public interface OnGestureDoneListener {
+        boolean isValidGesture(int pointCount);
         void onGestureDone(LinkedHashSet<Integer> numbers);
     }
 
