@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="GestureUnlockView">
+        <attr name="color_normal" format="color"/>
+        <attr name="color_selected" format="color"/>
+        <attr name="color_error" format="color"/>
+        <attr name="point_radius" format="dimension"/>
+        <attr name="stroke_width" format="dimension"/>
+        <attr name="line_width" format="dimension"/>
+        <attr name="radius_factor" format="float"/>
+    </declare-styleable>
+</resources>
