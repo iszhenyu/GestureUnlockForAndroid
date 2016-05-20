@@ -12,7 +12,10 @@
 
 在 module 的 build.gradle 添加 dependency
 
+```bash
 dependencies {
       compile 'cn.xianging:gestureunlock:0.1.1'
 }
+```
+
 
