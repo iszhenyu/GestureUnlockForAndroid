@@ -12,6 +12,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -123,7 +124,10 @@ public class GestureUnlockView extends View {
             for (int col = 0; col < 3; col++) {
                 float pointX = (width - availableSize) / 2 + margin * (col + 1) + radius * (2 * (col + 1) - 1);
                 float pointY = (height - availableSize) / 2 + margin * (row + 1) + radius * (2 * (row + 1) - 1);
-                this.mLockPoints[row][col] = new LockPoint(pointX, pointY, radius / radiusFactor, 1 + (col + row * 3));
+                this.mLockPoints[row][col] = new LockPoint(
+                        this, pointX, pointY,
+                        radius / radiusFactor, 1 + (col + row * 3)
+                );
             }
         }
     }
@@ -146,7 +150,11 @@ public class GestureUnlockView extends View {
             if (isGestureStart && !isGestureEnd) {
                 LockPoint lastPoint = mGesturePoints.get(mGesturePoints.size() - 1);
                 if (extraLine == null) {
-                    extraLine = new Line(lastPoint.circle.centerX, lastPoint.circle.centerY, movingX, movingY);
+                    extraLine = new Line(
+                            this,
+                            lastPoint.circle.centerX, lastPoint.circle.centerY,
+                            movingX, movingY
+                    );
                 } else {
                     extraLine.startX = lastPoint.circle.centerX;
                     extraLine.startY = lastPoint.circle.centerY;
@@ -190,7 +198,11 @@ public class GestureUnlockView extends View {
                 // 大于0个点的时候开始需要画线
                 if (!mGesturePoints.isEmpty()) {
                     LockPoint lastPoint = mGesturePoints.get(mGesturePoints.size() - 1);
-                    Line newLine = new Line(lastPoint.circle.centerX, lastPoint.circle.centerY, hitPoint.circle.centerX, hitPoint.circle.centerY);
+                    Line newLine = new Line(
+                            this,
+                            lastPoint.circle.centerX, lastPoint.circle.centerY,
+                            hitPoint.circle.centerX, hitPoint.circle.centerY
+                    );
                     mGestureLines.add(newLine);
                 }
                 mGesturePoints.add(hitPoint);
@@ -272,22 +284,22 @@ public class GestureUnlockView extends View {
         this.mOnGestureDoneListener = paramGestureDoneListener;
     }
 
-    public interface OnGestureDoneListener {
+    public static interface OnGestureDoneListener {
         boolean isValidGesture(int pointCount);
         void onGestureDone(LinkedHashSet<Integer> numbers);
     }
 
-    enum State {
+    static enum State {
         NORMAL, PRESSED, ERROR
     }
 
-    class LockPoint {
+    static class LockPoint {
         Circle circle;
         int number;
 
-        LockPoint(float x, float y, float radius, int number) {
+        LockPoint(GestureUnlockView unlockView, float x, float y, float radius, int number) {
             this.number = number;
-            this.circle = new Circle(x, y, radius);
+            this.circle = new Circle(unlockView, x, y, radius);
         }
 
         void changeState(State newState) {
@@ -311,11 +323,13 @@ public class GestureUnlockView extends View {
         }
     }
 
-    class Line {
+    static class Line {
+        WeakReference<GestureUnlockView> mWeakReference;
         float startX, startY, endX, endY;
         State state = State.PRESSED;
 
-        Line(float startX, float startY, float endX, float endY) {
+        Line(GestureUnlockView unlockView, float startX, float startY, float endX, float endY) {
+            mWeakReference = new WeakReference<GestureUnlockView>(unlockView);
             this.startX = startX;
             this.startY = startY;
             this.endX = endX;
@@ -323,51 +337,66 @@ public class GestureUnlockView extends View {
         }
 
         private void preparePaintColor() {
+            GestureUnlockView view = mWeakReference.get();
+            if (view == null) {
+                return;
+            }
             if (this.state == State.PRESSED) {
-                linePaint.setColor(colorSelected);
+                view.linePaint.setColor(view.colorSelected);
             } else {
-                linePaint.setColor(colorError);
+                view.linePaint.setColor(view.colorError);
             }
         }
 
         void draw(Canvas canvas) {
+            GestureUnlockView view = mWeakReference.get();
+            if (view == null) {
+                return;
+            }
             preparePaintColor();
-            canvas.drawLine(this.startX, this.startY, this.endX, this.endY, linePaint);
+            canvas.drawLine(this.startX, this.startY, this.endX, this.endY, view.linePaint);
         }
     }
 
-    class Circle {
+    static class Circle {
+        WeakReference<GestureUnlockView> mWeakReference;
         float centerX, centerY, radius, outerRadius;
         State state = State.NORMAL;
 
-        Circle(float pointX, float pointY, float radius) {
+        Circle(GestureUnlockView unlockView, float pointX, float pointY, float radius) {
+            mWeakReference = new WeakReference<GestureUnlockView>(unlockView);
             this.centerX = pointX;
             this.centerY = pointY;
             this.radius = radius;
-            this.outerRadius = radius * radiusFactor;
+            this.outerRadius = radius * unlockView.radiusFactor;
         }
 
         private void preparePaintColor() {
+            GestureUnlockView view = mWeakReference.get();
             switch (this.state) {
                 case NORMAL:
-                    pointPaint.setColor(colorNormal);
+                    view.pointPaint.setColor(view.colorNormal);
                     break;
                 case PRESSED:
-                    pointPaint.setColor(colorSelected);
+                    view.pointPaint.setColor(view.colorSelected);
                     break;
                 case ERROR:
-                    pointPaint.setColor(colorError);
+                    view.pointPaint.setColor(view.colorError);
                     break;
             }
         }
 
         void draw(Canvas canvas) {
+            GestureUnlockView view = mWeakReference.get();
+            if (view == null) {
+                return;
+            }
             preparePaintColor();
-            canvas.drawCircle(this.centerX, this.centerY, this.radius, pointPaint);
+            canvas.drawCircle(this.centerX, this.centerY, this.radius, view.pointPaint);
             if (this.state == State.PRESSED || this.state == State.ERROR) {
-                pointPaint.setStyle(Paint.Style.STROKE);
-                canvas.drawCircle(this.centerX, this.centerY, this.outerRadius, pointPaint);
-                pointPaint.setStyle(Paint.Style.FILL);
+                view.pointPaint.setStyle(Paint.Style.STROKE);
+                canvas.drawCircle(this.centerX, this.centerY, this.outerRadius, view.pointPaint);
+                view.pointPaint.setStyle(Paint.Style.FILL);
             }
         }
 
@@ -401,6 +430,9 @@ public class GestureUnlockView extends View {
             strokeWidth = bundle.getFloat(INSTANCE_STROKE_WIDTH);
             lineWidth = bundle.getFloat(INSTANCE_LINE_WIDTH);
             radiusFactor = bundle.getFloat(INSTANCE_RADIUS_FACTOR);
+
+            initialized = false;
+            isGestureValid = true;
             initPaints();
             super.onRestoreInstanceState(bundle.getParcelable(INSTANCE_STATE));
             return;
