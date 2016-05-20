@@ -17,6 +17,11 @@
         android:id="@+id/gesture_unlock_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:color_normal="@color/gray"
+        app:color_selected="@color/green"
+        app:color_error="@color/red"
+        app:stroke_width="2dp"
+        app:line_width="2dp"
         />
 
 </RelativeLayout>

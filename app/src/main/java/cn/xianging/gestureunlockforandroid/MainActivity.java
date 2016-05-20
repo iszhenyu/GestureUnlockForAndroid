@@ -9,7 +9,8 @@ import java.util.LinkedHashSet;
 
 import cn.xianging.gestureunlock.GestureUnlockView;
 
-public class MainActivity extends AppCompatActivity implements GestureUnlockView.OnGestureDoneListener {
+public class MainActivity extends AppCompatActivity
+        implements GestureUnlockView.OnGestureDoneListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
